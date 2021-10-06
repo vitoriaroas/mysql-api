@@ -41,20 +41,20 @@ exports.getStudentById = async (req, res) => {
 };
 
 exports.updateStudent = async (req, res) => {
-  const query = `UPDADE students
-                    SET`;
-  const { id } = req.params;
   const updateStudent = req.body;
+  const { id } = req.params;
+  let query = `UPDATE students SET `;
 
   Object.entries(updateStudent).forEach((entry) => {
     const [key, value] = entry;
-    query += `${key} = ${value},`;
+    query += `${key} = "${value}",`;
   });
-  query += `WHERE id = ?`;
+  query = query.substring(0, query.length - 1);
+  query += ` WHERE id = ?`;
   try {
-    const [student, field] = await dbConnection.promise().query(query, id);
-    res.status(200).send(student);
-  } catch (error) {
-    res.status(500).send(error);
+    const [result, field] = await dbConnection.promise().query(query, id);
+    res.status(200).send(result);
+  } catch (err) {
+    res.status(500).send(err);
   }
-}
+};
